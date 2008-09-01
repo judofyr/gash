@@ -13,7 +13,7 @@ class Gash < SimpleDelegator
     def blob?;    self.class == Gash::Blob; end
     def tree?;    self.class == Gash::Tree; end
     def changed?; !@sha1;                   end
-    def changed!; @sha1 = nil;              end
+    def changed!; @sha1 = nil;parent.changed! end
     def gash;     parent.gash;              end
   end
   
@@ -29,8 +29,8 @@ class Gash < SimpleDelegator
       else
         super(key)
       end
+    ensure
       ret.load! if ret.respond_to?(:load!) && !lazy
-      ret
     end
     alias / []
     
@@ -45,16 +45,14 @@ class Gash < SimpleDelegator
       if key.include?("/")
         keys = key.split("/")
         name = keys.pop
-        parent = keys.inject(self) do |memo, i|
-          memo[i] = Tree.new unless memo.include?(i)
+        keys.inject(self) do |memo, i|
+          memo[i] = Tree.new(:parent => self) unless memo.include?(i)
           memo[i, true]
-        end
-        parent[name, keep_sha1] = value
+        end[name, keep_sha1] = value
       else
-        parent = self
         value = case value
         when Tree, Blob
-          value.parent ||= parent
+          value.parent = self
           value
         else
           Blob.new(:content => value.to_s)
@@ -62,10 +60,7 @@ class Gash < SimpleDelegator
         super(key, value)
       end
     ensure
-      unless keep_sha1
-        parent.changed!
-        self.changed!
-      end
+      self.changed! unless keep_sha1
     end
   end
   
@@ -98,6 +93,10 @@ class Gash < SimpleDelegator
   
   def gash
     self
+  end
+  
+  def changed!
+    @sha1 = nil
   end
   
   def update!
