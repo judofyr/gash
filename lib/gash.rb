@@ -29,7 +29,7 @@ class Gash < SimpleDelegator
       else
         super(key)
       end
-      ret.load! if ret.is_a?(Gash::Blob) && !lazy
+      ret.load! if ret.respond_to?(:load!) && !lazy
       ret
     end
     alias / []
