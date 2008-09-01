@@ -29,11 +29,6 @@ Modify a Git-repo without touching the working-directory
 
 = Warning!
 This is a really alpha, so don't blame me for destroying your repo.
-Oh, and this won't work at the moment:
-
-  gash["lib"]["gash.rb"] = "new"
-  # use:
-  gash["lib/gash.rb"] = "new"
  
 = Thanks!
 This would be impossible without siebertm's git-shelve...

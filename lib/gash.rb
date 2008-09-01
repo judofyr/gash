@@ -2,19 +2,23 @@ require 'delegate'
 
 class Gash < SimpleDelegator
   module Helpers
-    attr_accessor :sha1, :mode
+    attr_accessor :sha1, :mode, :parent
+    
+    def initialize(opts = {})
+      opts.each do |key, value|
+        send("#{key}=", value)
+      end
+    end
+    
     def blob?;    self.class == Gash::Blob; end
     def tree?;    self.class == Gash::Tree; end
-    def changed?; !@sha1 end
+    def changed?; !@sha1;                   end
+    def changed!; @sha1 = nil;              end
+    def gash;     parent.gash;              end
   end
   
   class Tree < Hash
     include Helpers
-    
-    def initialize(opts = {})
-      @sha1 = opts[:sha1]
-      @mode = opts[:mode]
-    end
     
     def [](key, lazy = nil)
       ret = if key.include?("/")
@@ -41,13 +45,16 @@ class Gash < SimpleDelegator
       if key.include?("/")
         keys = key.split("/")
         name = keys.pop
-        keys.inject(self) do |memo, i|
+        parent = keys.inject(self) do |memo, i|
           memo[i] = Tree.new unless memo.include?(i)
           memo[i, true]
-        end[name, keep_sha1] = value
+        end
+        parent[name, keep_sha1] = value
       else
+        parent = self
         value = case value
         when Tree, Blob
+          value.parent ||= parent
           value
         else
           Blob.new(:content => value.to_s)
@@ -55,27 +62,23 @@ class Gash < SimpleDelegator
         super(key, value)
       end
     ensure
-      @sha1 = nil unless keep_sha1
+      unless keep_sha1
+        parent.changed!
+        self.changed!
+      end
     end
   end
   
   class Blob < Delegator
     include Helpers
-    attr_accessor :mode, :sha1
-    
-    def initialize(opts = {})
-      @gash = opts[:gash]
-      @mode = opts[:mode]
-      @sha1 = opts[:sha1]
-      @content = opts[:content]
-    end
+    attr_accessor :content
     
     def inspect
       @content ? @content.inspect : (@sha1 ? "#<Blob:#{@sha1}>" : to_s.inspect) 
     end
     
     def load!
-      @content ||= @gash.send(:cat_file, @sha1)
+      @content ||= gash.send(:cat_file, @sha1)
     end
     
     def __getobj__
@@ -89,8 +92,12 @@ class Gash < SimpleDelegator
   def initialize(branch, repo = ".")
     @branch = branch
     @repository = File.expand_path(repo)
-    __setobj__(Tree.new)
+    __setobj__(Tree.new(:parent => self))
     update!
+  end
+  
+  def gash
+    self
   end
   
   def update!
@@ -105,19 +112,21 @@ class Gash < SimpleDelegator
       if name[0] == ?" && name[-1] == ?"
         name = eval(name)
       end
-      self[name, true] = case type
+      name = name[/[^\/]+$/]
+      parent = if $`.empty?
+        self
+      else
+        self[$`.chomp("/")]
+      end
+      parent[name, true] = case type
       when ?b
-        Blob.new(:gash => self, :sha1 => sha1, :mode => mode)
+        Blob.new(:sha1 => sha1, :mode => mode)
       when ?t
         Tree.new(:sha1 => sha1, :mode => mode)
       end
     end
     self
   end
-  
-  def changed(file)
-    self[file] = self[file]
-  end 
   
   def commit(msg)
     return unless changed?
