@@ -267,7 +267,7 @@ class Gash < SimpleDelegator
     options[:strip] = true unless options.key?(:strip)
 
     ENV["GIT_DIR"] = @repository
-    cmd = "git-#{cmd} #{args.join(' ')}"
+    cmd = "git #{cmd} #{args.join(' ')}"
 
     result = ""
     IO.popen(cmd, "w+") do |f|
