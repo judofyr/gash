@@ -52,11 +52,11 @@ class Gash < SimpleDelegator
       else
         value = case value
         when Tree, Blob
-          value.parent = self
           value
         else
           Blob.new(:content => value.to_s)
         end
+        value.parent = self
         super(key, value)
       end
     ensure
