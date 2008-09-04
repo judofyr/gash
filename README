@@ -1,34 +1,3 @@
-= Gash, Git meets Hash
-Modify a Git-repo without touching the working-directory
-  
-  gash = Gash.new("master", ".git")
-  gash["README"]           # => This file
-  gash["lib/gash.rb"]      # => That file
-  gash["lib"]["gash.rb"]   # => Another way
-  gash / "lib" / "gash.rb" # => Yet another way
-  
-  gash["test"] = "Just a little demo"
-  gash.changed?         # => true
-  gash["test"].changed? # => true
-  gash["lib"].changed?  # => false
-  gash.commit("Playing with Gash")
-  gash.changed?         # => false
-  
-  gash["lib"].sha1     # => SHA1 to tree
-  gash["lib"].mode     # => "040000"
-  gash["README"].sha1  # => SHA1 to blob
-  gash["README"].mode  # => "100644"
-  
-  git = Gash.new("master", "../git/.git")  # Really big repo
-  # Lazy loading, so the above command is really quick
-  r = git["README", true] # => Don't load the blob yet
-  r.sha1   # => not yet...
-  r.mode   # => not yet...
-  r.upcase # => there it will!
-  # Load explict with r.load!
+= Gash, Git + Hash
 
-= Warning!
-This is a really alpha, so don't blame me for destroying your repo.
- 
-= Thanks!
-This would be impossible without siebertm's git-shelve...
+Please see http://dojo.rubyforge.org/gash or the documentation in lib/gash.rb!
