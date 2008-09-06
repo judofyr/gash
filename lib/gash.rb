@@ -55,7 +55,7 @@ class Gash < SimpleDelegator
     # Checks if this object has been changed (since last commit).
     def changed?; !@sha1 end
     # Mark this, and all parents as changed.
-    def changed!; @sha1 = nil;parent.changed! end
+    def changed!; @sha1 = nil;parent.changed! if parent end
     # Returns the Gash-object (top-parent).
     def gash; parent.gash end
   end
