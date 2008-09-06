@@ -57,7 +57,7 @@ class Gash < SimpleDelegator
     # Mark this, and all parents as changed.
     def changed!; @sha1 = nil;parent.changed! if parent end
     # Returns the Gash-object (top-parent).
-    def gash; parent.gash end
+    def gash; parent.gash if parent end
   end
   
   # A Tree is a Hash which can store other instances of Tree and Blob.
