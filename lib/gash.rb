@@ -85,7 +85,7 @@ class Gash < SimpleDelegator
           value
         end
       when Hash
-        Tree.new.merge!(value)
+        Tree[value]
       else
         Blob.new(:content => value.to_s)
       end
@@ -97,6 +97,10 @@ class Gash < SimpleDelegator
   # <strong>See also</strong>: Helpers, Blob
   class Tree < Hash
     include Helpers
+    
+    def self.[](*val)
+      new.merge!(Hash[*val])
+    end
     
     # Retrieves the _value_ stored as +key+:
     #
