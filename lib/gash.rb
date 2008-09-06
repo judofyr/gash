@@ -137,6 +137,35 @@ class Gash < SimpleDelegator
     ensure
       self.changed! unless not_changed
     end
+    
+    def to_hash
+      inject({}) do |memo, (key, value)|
+        memo[key] = value.respond_to?(:to_hash) ? value.to_hash : value.to_s
+        memo
+      end
+    end
+    
+    def merge(hash)
+      tree = self.dup
+      tree.merge!(hash)
+    end
+    
+    def merge!(hash)
+      hash.each do |key, value|
+        self[key] = value
+      end
+      self
+    end
+    alias update merge!
+    
+    def replace(hash)
+      if hash.is_a?(Gash::Tree)
+        super
+      else
+        clear
+        merge!(hash)
+      end
+    end
   end
   
   # A Blob represent a string:
