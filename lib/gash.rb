@@ -29,6 +29,7 @@ class Gash < SimpleDelegator
   module Errors
     # This error is raised when the Git-command fails.
     class Git < StandardError; end
+    class NoGitRepo < StandardError; end
   end
   
   # Some common methods used by both Tree and Blob.
@@ -390,7 +391,11 @@ class Gash < SimpleDelegator
     result, status = run_git(cmd, *rest, &block)
 
     if status != 0
-      raise Errors::Git.new("Error: #{cmd} returned #{status}. Result: #{result}")
+      if result =~ /Not a git repository/
+        raise Errors::NoGitRepo.new("No Git repository at: " + @repository)
+      else
+        raise Errors::Git.new("Error: #{cmd} returned #{status}. Result: #{result}")
+      end
     end
     result
   end
