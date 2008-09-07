@@ -223,7 +223,7 @@ class Gash < SimpleDelegator
   #
   # <strong>See also</strong>: Helpers, Tree
   class Blob < Delegator
-    include Helpers
+    include Helpers, Comparable
     attr_accessor :content
     
     # Loads the file from Git, unless it's already been loaded.
@@ -233,6 +233,14 @@ class Gash < SimpleDelegator
     
     def inspect #:nodoc:
       @content ? @content.inspect : (@sha1 ? "#<Blob:#{@sha1}>" : to_s.inspect) 
+    end
+    
+    def <=>(other) #:nodoc:
+      if other.is_a?(Blob) && sha1 && other.sha1
+        sha1 <=> other.sha1
+      else
+        __getobj__ <=> other
+      end
     end
     
     def __getobj__ #:nodoc:
