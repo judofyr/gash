@@ -3,12 +3,14 @@ require 'delegate'
 # == What is Gash?
 #
 # * Gash lets you access a Git-repo as a Hash.
+# * Gash doesn't touch your working directory
 # * Gash only cares about the data, not the commits.
 # * Gash only cares about the _latest_ data.
 # * Gash can commit.
-# * Gash doesn't touch your working directory
 # * Gash will automatically create branches if they don't exists.
 # * Gash only loads what it needs, so it handles large repos well.
+#
+# Some of these "rules" might change it the future.
 #
 # == How do you use it?
 #
@@ -19,12 +21,7 @@ require 'delegate'
 # It's also important to remember that a Gash is simply a Tree, so you can
 # also call those methods.
 #
-# <strong>See also</strong>: #new, #commit, Tree
-#
-# == Limitation
-#
-# The only Hash-like features which currently works is #[] and #[]=,
-# so don't try #merge or something like that.
+# <b>See also</b: #new, #commit, Tree
 class Gash < SimpleDelegator
   module Errors
     # This error is raised when the Git-command fails.
@@ -95,25 +92,24 @@ class Gash < SimpleDelegator
   
   # A Tree is a Hash which can store other instances of Tree and Blob.
   #
-  # <strong>See also</strong>: Helpers, Blob
+  # <b>See also</b>: Helpers, Blob
   class Tree < Hash
     include Helpers
     
-    def self.[](*val)
-      new.merge!(Hash[*val])
-    end
-    
     # Retrieves the _value_ stored as +key+:
     #
-    #   tree["FILE"] == the file
-    #   tree["DIR/FILE"] == tree["DIR"]["FILE"] = another file
+    #   tree["FILE"] == File.read("FILE")
+    #   tree["DIR/FILE"] == tree["DIR"]["FILE"] == File.read("DIR/FILE")
     #
-    # It will automatically call the +load!+-method in order to load
-    # it from the repo. Set +lazy+ to +true+ if this is not what you want:
+    # ==== Lazy loading
     #
-    #   blob = tree["FILE", true] == #<Blob:1234...>
+    # By default, this method will automatically load the blob/tree from
+    # the repo. If you rather want to load it later, simply set +lazy+ to
+    # +true+:
+    #
+    #   blob = tree["FILE", true]
     #   # do some other stuff...
-    #   blob.laod! # Load it now!
+    #   blob.load! # Load it now!
     def [](key, lazy = nil)
       ret = if key.include?("/")
         key, rest = key.split("/", 2)
@@ -128,23 +124,27 @@ class Gash < SimpleDelegator
     end
     alias / []
     
-    # Stores the given _value_:
+    # Stores the given _value_ at +key+:
     #
     #   tree["FILE"] = "Content"
     #
-    # Unless it's already a Tree or a Blob, it will be converted to a Blob,
-    # and the parent will _always_ be set to +self+.
+    # It uses Helpers#normalize in order convert it to a blob/tree, and will
+    # always set the parent to itself:
     #
     #   tree["FILE"] = "Content"
     #     # is the same as:
     #   tree["FILE"] = Gash::Blob.new(:content => "Content", :parent => tree)
     #
-    # It will also mark the object as changed (using <code>Helpers#changed!</code>).
-    # Set +not_changed+ to +true+ if this is not what you want.
-    # 
-    # (If you give it three arguments, then the second one will act as
-    # +not_changed+, not the third):
+    # ==== Mark as changed
     #
+    # By default, the object will be marked as changed (using
+    # <code>Helpers#changed!</code>). If this is not what you want, simply set
+    # +not_changed+ to +true+.
+    #
+    # However, if you give it three arguments, then the second one will act as
+    # +not_changed+, not the third:
+    #
+    #          1       2        3
     #   tree["FILE", true] = "Test"
     #   tree["FILE"].changed? # => false
     def []=(key, value, not_changed = nil)
@@ -170,6 +170,7 @@ class Gash < SimpleDelegator
       self.changed! unless not_changed
     end
     
+    # Converts the tree to a Hash.
     def to_hash
       inject({}) do |memo, (key, value)|
         memo[key] = value.respond_to?(:to_hash) ? value.to_hash : value.to_s
@@ -177,12 +178,16 @@ class Gash < SimpleDelegator
       end
     end
     
-    def merge(hash)
+    def self.[](*val) # :nodoc:
+      new.merge!(Hash[*val])
+    end
+    
+    def merge(hash) # :nodoc:
       tree = self.dup
       tree.merge!(hash)
     end
     
-    def merge!(hash)
+    def merge!(hash) # :nodoc:
       hash.each do |key, value|
         self[key] = value
       end
@@ -190,7 +195,7 @@ class Gash < SimpleDelegator
     end
     alias update merge!
     
-    def replace(hash)
+    def replace(hash) # :nodoc:
       if hash.is_a?(Gash::Tree)
         super
       else
@@ -221,7 +226,7 @@ class Gash < SimpleDelegator
   #
   #   tree["FILE"] = Gash::Blob.new(:sha1 => a_sha1)
   #
-  # <strong>See also</strong>: Helpers, Tree
+  # <b>See also</b>: Helpers, Tree
   class Blob < Delegator
     include Helpers, Comparable
     attr_accessor :content
@@ -253,7 +258,7 @@ class Gash < SimpleDelegator
   
   # Opens the +repo+ with the specified +branch+.
   #
-  # <strong>Please note:</strong> The +repo+ must link to the actual repo,
+  # <b>Please note:</b> The +repo+ must link to the actual repo,
   # not the working directory!
   def initialize(branch = "master", repo = ".git")
     @branch = branch
