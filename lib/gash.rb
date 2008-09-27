@@ -365,9 +365,7 @@ class Gash < SimpleDelegator
   end
   
   def git_tree(&blk)
-    git('ls-tree', '-r', '-t', @branch, '2>&1') do |f|
-      f.each_line(&blk)
-    end
+    git('ls-tree', '-r', '-t', @branch, '2>&1').each_line(&blk)
   rescue Errors::Git
     ""
   end
