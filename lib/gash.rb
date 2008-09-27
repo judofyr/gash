@@ -116,14 +116,7 @@ class Gash < SimpleDelegator
     #   # do some other stuff...
     #   blob.load! # Load it now!
     def [](key, lazy = nil)
-      ret = if key.include?("/")
-        key, rest = key.split("/", 2)
-        value = super(key)
-        return if value.nil?
-        value[rest]
-      else
-        super(key)
-      end
+      ret = fetch(key, default)
     ensure
       ret.load! if ret.respond_to?(:load!) && !lazy
     end
@@ -174,7 +167,8 @@ class Gash < SimpleDelegator
     ensure
       self.changed! unless not_changed
     end
-    
+    alias store []=
+     
     # Converts the tree to a Hash.
     def to_hash
       inject({}) do |memo, (key, value)|
@@ -182,17 +176,50 @@ class Gash < SimpleDelegator
         memo
       end
     end
+
+    # :stopdoc:
+    def fetch(*args)
+      key = args.first.to_s
+      
+      case args.length
+      when 1
+        r = true
+      when 2
+        r = false
+        default = args.last
+      else
+        raise ArgumentError, "wrong number of arguments (#{args.length} for 2)"
+      end
+      
+      if key.include?("/")
+        key, rest = key.split("/", 2)
+        value = super(key)
+        value.fetch(rest)
+      else
+        super(key)
+      end
+    rescue IndexError => e
+      (r && raise(e)) || default
+    end
     
-    def self.[](*val) # :nodoc:
+    def self.[](*val)
       new.merge!(Hash[*val])
     end
     
-    def merge(hash) # :nodoc:
+    def ==(other)
+      if other.is_a?(Tree) && sha1 && other.sha1
+        sha1 == other.sha1
+      else
+        super
+      end
+    end
+    
+    def merge(hash)
       tree = self.dup
       tree.merge!(hash)
     end
     
-    def merge!(hash) # :nodoc:
+    def merge!(hash)
       hash.each do |key, value|
         self[key] = value
       end
@@ -200,7 +227,7 @@ class Gash < SimpleDelegator
     end
     alias update merge!
     
-    def replace(hash) # :nodoc:
+    def replace(hash)
       if hash.is_a?(Gash::Tree)
         super
       else
@@ -208,6 +235,7 @@ class Gash < SimpleDelegator
         merge!(hash)
       end
     end
+# :startdoc:
   end
   
   # A Blob represent a string:
