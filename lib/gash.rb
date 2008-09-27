@@ -183,7 +183,7 @@ class Gash < SimpleDelegator
         keys = key.split("/")
         name = keys.pop
         keys.inject(self) do |memo, i|
-          memo[i] = Tree.new(:parent => self) unless memo.include?(i)
+          memo[i, not_changed] = Tree.new(:parent => self) unless memo.include?(i)
           memo[i, true]
         end[name, not_changed] = value
       else
