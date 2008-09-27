@@ -22,6 +22,11 @@ require 'delegate'
 # also call those methods.
 #
 # <b>See also</b>: #new, #commit, Tree
+#
+# == Credits
+#
+# This code is based upon git-shelve[http://www.siebert-wd.de/projects/git-shelve],
+# and is released under the same license; LGPL.
 class Gash < SimpleDelegator
   module Errors
     # This error is raised when the Git-command fails.
