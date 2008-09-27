@@ -21,7 +21,7 @@ require 'delegate'
 # It's also important to remember that a Gash is simply a Tree, so you can
 # also call those methods.
 #
-# <b>See also</b: #new, #commit, Tree
+# <b>See also</b>: #new, #commit, Tree
 class Gash < SimpleDelegator
   module Errors
     # This error is raised when the Git-command fails.
