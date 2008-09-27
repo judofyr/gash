@@ -9,6 +9,9 @@ require 'delegate'
 # * Gash can commit.
 # * Gash will automatically create branches if they don't exists.
 # * Gash only loads what it needs, so it handles large repos well.
+# * Gash got {pretty good documentation}[http://dojo.rubyforge.org/gash].
+# * Gash got {a bug tracker}[http://dojo.lighthouseapp.com/projects/17529-gash].
+# * Gash is being {developed at GitHub}[http://github.com/judofyr/gash].
 #
 # Some of these "rules" might change it the future.
 #
