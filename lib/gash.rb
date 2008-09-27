@@ -229,6 +229,10 @@ class Gash < SimpleDelegator
       (r && raise(e)) || default
     end
     
+    def delete(key)
+      super && changed!
+    end
+    
     def self.[](*val)
       new.merge!(Hash[*val])
     end
