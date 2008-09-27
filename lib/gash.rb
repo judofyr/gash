@@ -97,6 +97,30 @@ class Gash < SimpleDelegator
   
   # A Tree is a Hash which can store other instances of Tree and Blob.
   #
+  # == Special methods
+  #
+  # Internally, a tree is being stored like this:
+  #
+  #   {
+  #     "README" => blob,
+  #     "examples" => {
+  #       "test.rb" => blob,
+  #       "yay.rb" => blob
+  #     }
+  #   }
+  #
+  # So you have to do <code>tree["examples"].delete("test.rb")</code> instead
+  # of <code>tree.delete("examples/test.rb")</code>. However, there are some
+  # methods which supports the slash. All of these will work:
+  #
+  #   tree["examples/test.rb"]
+  #   tree.fetch("examples/test.rb")
+  #   tree["examples/another.rb"] = "Content"
+  #   tree.store("examples/another.rb", "Content") # Exactly the same as above.
+  #
+  # You can of course use <code>tree["examples"]["test.rb"]</code> if you prefer
+  # that.   
+  #
   # <b>See also</b>: Helpers, Blob
   class Tree < Hash
     include Helpers
