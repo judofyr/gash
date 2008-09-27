@@ -260,7 +260,7 @@ class Gash < SimpleDelegator
   #
   # <b>Please note:</b> The +repo+ must link to the actual repo,
   # not the working directory!
-  def initialize(branch = "master", repo = ".git")
+  def initialize(repo = ".git", branch = "master")
     @branch = branch
     @repository = File.expand_path(repo)
     __setobj__(Tree.new(:parent => self))
