@@ -67,14 +67,14 @@ class Gash < SimpleDelegator
     
     # Converts the +value+ to a Tree or a Blob, using some rules:
     # 
-    # == If +value+ is already a Tree or a Blob:
+    # ==== If +value+ is already a Tree or a Blob:
     # 
     # * If +value+ comes from another repo, we load it and return a deep copy.
     # * If +value+ got no parent, we simply return the same tree.
     # * If +value+'s parent is +self+, we also return the same tree.
     # * If +value+'s parent is something else, we return a duplicated tree.
     #
-    # == If it's something else:
+    # ==== If it's something else:
     #
     # * If +value+ is a Hash, we create a Tree from it.
     # * If it's not any of the former rules, we turn it into a string and create a Blob from it. 
@@ -120,9 +120,15 @@ class Gash < SimpleDelegator
   #   tree.fetch("examples/test.rb")
   #   tree["examples/another.rb"] = "Content"
   #   tree.store("examples/another.rb", "Content") # Exactly the same as above.
+  #   
+  #   tree["examples"]["test.rb"] # Or, you could use this
   #
-  # You can of course use <code>tree["examples"]["test.rb"]</code> if you prefer
-  # that.   
+  # == Documentation
+  #
+  # The point of Tree is that it should be as close to Hash as possible.
+  # Therefore, methods which behaves exactly equally in Gash and Hash will
+  # not be documentated below. Please see the Ruby documentation if you
+  # wonder what you can do.
   #
   # <b>See also</b>: Helpers, Blob
   class Tree < Hash
@@ -236,7 +242,7 @@ class Gash < SimpleDelegator
     def self.[](*val)
       new.merge!(Hash[*val])
     end
-    
+
     def ==(other)
       if other.is_a?(Tree) && sha1 && other.sha1
         sha1 == other.sha1
