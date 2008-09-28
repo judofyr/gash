@@ -7,7 +7,7 @@ require 'delegate'
 # * Gash only cares about the data, not the commits.
 # * Gash only cares about the _latest_ data.
 # * Gash can commit.
-# * Gash will automatically create branches if they don't exists.
+# * Gash will automatically create branches if they don't exist.
 # * Gash only loads what it needs, so it handles large repos well.
 # * Gash got {pretty good documentation}[http://dojo.rubyforge.org/gash].
 # * Gash got {a bug tracker}[http://dojo.lighthouseapp.com/projects/17529-gash].
