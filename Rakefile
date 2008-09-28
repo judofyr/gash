@@ -8,7 +8,6 @@ Echoe.new('gash') do |p|
   p.summary = "Git + Hash"
   p.url = "http://dojo.rubyforge.org/gash/"
   p.rdoc_options += ["--main", "Gash", "--title", "Gash"]
-  p.rubygems_version = nil
 end
 
 Rake::Task[:publish_docs].instance_eval do
