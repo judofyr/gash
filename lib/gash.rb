@@ -395,6 +395,7 @@ class Gash < SimpleDelegator
   def inspect #:nodoc:
     __getobj__.inspect
   end
+  undef_method :dup
   
   private
   
