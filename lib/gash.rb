@@ -355,9 +355,6 @@ class Gash < SimpleDelegator
       type = line[7]
       sha1 = line[12, 40]
       name = line[53..-1]
-      if name[0] == ?" && name[-1] == ?"
-        name = eval(name)
-      end
       name = name[/[^\/]+$/]
       parent = if $`.empty?
         self
@@ -406,18 +403,17 @@ class Gash < SimpleDelegator
   def to_tree!(from = self)
     input = []
     from.each do |key, value|
-      key = key.inspect
       if value.tree?
         value.sha1 ||= to_tree!(value)
         value.mode ||= "040000"
-        input << "#{value.mode} tree #{value.sha1}\t#{key}\n"
+        input << "#{value.mode} tree #{value.sha1}\t#{key}\0"
       else
         value.sha1 ||= git('hash-object', '-w', '--stdin', :input => value.to_s)
         value.mode ||= "100644" 
-        input << "#{value.mode} blob #{value.sha1}\t#{key}\n"
+        input << "#{value.mode} blob #{value.sha1}\t#{key}\0"
       end
     end
-    git('mktree', :input => input)
+    git('mktree', '-z', :input => input)
   end
   
   def update_head(new_head)
@@ -436,7 +432,7 @@ class Gash < SimpleDelegator
   end
   
   def git_tree(&blk)
-    git('ls-tree', '-r', '-t', @branch, '2>&1').each_line(&blk)
+    git('ls-tree', '-r', '-t', '-z', @branch, '2>&1').split("\0").each(&blk)
   rescue Errors::Git
     ""
   end
