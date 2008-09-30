@@ -327,12 +327,10 @@ class Gash < SimpleDelegator
   attr_accessor :branch, :repository
   
   # Opens the +repo+ with the specified +branch+.
-  #
-  # <b>Please note:</b> The +repo+ must link to the actual repo,
-  # not the working directory!
-  def initialize(repo = ".git", branch = "master")
+  def initialize(repo = ".", branch = "master")
     @branch = branch
-    @repository = File.expand_path(repo)
+    @repository = repo
+    @repository = find_repo(repo)
     __setobj__(Tree.new(:parent => self))
     update!
   end
@@ -395,6 +393,14 @@ class Gash < SimpleDelegator
   undef_method :dup
   
   private
+  
+  def find_repo(dir)
+    Dir.chdir(dir) do
+      File.expand_path(git('rev-parse', '--git-dir', :git_dir => false))
+    end
+  rescue Errno::ENOENT, Gash::Errors::Git
+    raise Errors::NoGitRepo.new("No Git repository at: " + @repository)
+  end
   
   def cat_file(blob)
     git('cat-file', 'blob', blob)
@@ -469,11 +475,7 @@ class Gash < SimpleDelegator
     result, status = run_git(cmd, *rest, &block)
 
     if status != 0
-      if result =~ /Not a git repository/
-        raise Errors::NoGitRepo.new("No Git repository at: " + @repository)
-      else
-        raise Errors::Git.new("Error: #{cmd} returned #{status}. Result: #{result}")
-      end
+      raise Errors::Git.new("Error: #{cmd} returned #{status}. Result: #{result}")
     end
     result
   end
