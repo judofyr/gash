@@ -382,10 +382,7 @@ class Gash < SimpleDelegator
   
   # Checks if the current branch exists
   def branch_exists?
-    git('rev-parse', @branch)
-    true
-  rescue Errors::Git
-    false
+    git_status('rev-parse', @branch) == 0
   end
   
   def inspect #:nodoc:
