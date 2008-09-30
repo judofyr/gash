@@ -1,4 +1,5 @@
 require 'delegate'
+require 'open4'
 
 # == What is Gash?
 #
@@ -381,7 +382,7 @@ class Gash < SimpleDelegator
   
   # Checks if the current branch exists
   def branch_exists?
-    git('rev-parse', @branch, '2>&1')
+    git('rev-parse', @branch)
     true
   rescue Errors::Git
     false
@@ -438,13 +439,13 @@ class Gash < SimpleDelegator
   end
   
   def git_tree(&blk)
-    git('ls-tree', '-r', '-t', '-z', @branch, '2>&1').split("\0").each(&blk)
+    git('ls-tree', '-r', '-t', '-z', @branch).split("\0").each(&blk)
   rescue Errors::Git
     ""
   end
   
   def git_tree_sha1(from = @branch)
-    git('rev-parse', @branch + '^{tree}', '2>&1')
+    git('rev-parse', @branch + '^{tree}')
   rescue Errors::Git
   end
   
@@ -472,10 +473,10 @@ class Gash < SimpleDelegator
   # ==== Returns
   # String:: if you didn't supply a block, the things git said on STDOUT, otherwise noting
   def git(cmd, *rest, &block)
-    result, status = run_git(cmd, *rest, &block)
+    result, reserr, status = run_git(cmd, *rest, &block)
 
     if status != 0
-      raise Errors::Git.new("Error: #{cmd} returned #{status}. Result: #{result}")
+      raise Errors::Git.new("Error: #{cmd} returned #{status}. STDERR: #{reserr}")
     end
     result
   end
@@ -491,7 +492,7 @@ class Gash < SimpleDelegator
   # ==== Returns
   # Integer:: the return status of git
   def git_status(cmd, *rest, &block)
-    run_git(cmd, *rest, &block)[1]
+    run_git(cmd, *rest, &block)[2]
   end
 
   # passes the command over to git (you should not call this directly)
@@ -503,44 +504,53 @@ class Gash < SimpleDelegator
   #
   # ==== Options
   # :strip<Boolean>:: true to strip the output String#strip, false not to to it
+  # :git_dir<Boolean>:: true to automatically use @repository as git-dir, false to not use anything.
   #
   # ==== Raises
   # Errors::Git:: if git returns non-null, an Exception is raised
   #
   # ==== Returns
-  # Array[String, Integer]:: the first item is the STDOUT of git, the second is the return-status
+  # Array[String, String, Integer]:: the first item is the STDOUT of git, the second is the STDERR, the third is the return-status
   def run_git(cmd, *args, &block)
     options = if args.last.kind_of?(Hash)
       args.pop
     else
       {}
     end
-
     options[:strip] = true unless options.key?(:strip)
+    
+    git_cmd = ["git"]
+    
+    unless options[:git_dir] == false
+      git_cmd.push("--git-dir", @repository)
+    end
 
-    ENV["GIT_DIR"] = @repository
-    cmd = "git #{cmd} #{args.join(' ')}"
-
+    git_cmd.push(cmd, *args)
+    
     result = ""
-    IO.popen(cmd, "w+") do |f|
+    reserr = ""
+    status = Open4.popen4(*git_cmd) do |pid, stdin, stdout, stderr|
       if input = options.delete(:input)
-        f.write(input)
-        f.close_write
+        stdin.write(input)
       elsif block_given?
-        yield f
-        f.close_write
+        yield stdin
       end
+      stdin.close_write
 
       result = ""
+      reserr = ""
 
-      while !f.eof
-        result << f.read
+      while !stdout.eof
+        result << stdout.read
+      end
+      
+      while !stderr.eof
+        reserr << stderr.read
       end
     end
-    status = $?
 
     result.strip! if options[:strip] == true
-
-    [result, status]
+    
+    [result, reserr, status]
   end
 end
