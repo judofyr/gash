@@ -16,6 +16,18 @@ require 'open4'
 #
 # Some of these "rules" might change it the future.
 #
+# == How do you install it?
+# 
+# The stable version can be downloaded at {RubyForge}[http://rubyforge.org/frs/?group_id=4933&release_id=26630],
+# or installed through RubyGems:
+#
+#   sudo gem install gash
+#
+# The unstable version can be checked out {through Git at GitHub}[http://github.com/judofyr/gash],
+# and installed through this command:
+#
+#   rake install
+#
 # == How do you use it?
 #
 #   gash = Gash.new
