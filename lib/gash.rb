@@ -30,7 +30,15 @@ require 'open4'
 # == Credits
 #
 # This code is based upon git-shelve[http://www.siebert-wd.de/projects/git-shelve],
-# and is released under the same license; LGPL.
+# created by <b>Michael Siebert</b>, which is released under LGPL. However,
+# Michael has allowed me to release this under the MIT-license as long as
+# I keep his name here.
+#
+# And, in fact: I could never create this without the code written by Michael.
+# You should really thank him!
+#
+# Older versions of Gash, which doesn't include this section or the MIT-license,
+# is still licensed under LGPL.
 class Gash < SimpleDelegator
   module Errors
     # This error is raised when the Git-command fails.
