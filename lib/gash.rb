@@ -360,10 +360,6 @@ class Gash < SimpleDelegator
     self
   end
   
-  def changed! #:nodoc:
-    @sha1 = nil
-  end
-  
   # Fetch the latest data from Git; you can use this as a +clear+-method.
   def update!
     clear
