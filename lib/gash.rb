@@ -406,7 +406,7 @@ class Gash < SimpleDelegator
   end
   undef_method :dup
   
-  private
+  #private
   
   def find_repo(dir)
     Dir.chdir(dir) do
@@ -544,7 +544,7 @@ class Gash < SimpleDelegator
     reserr = ""
     status = Open4.popen4(*git_cmd) do |pid, stdin, stdout, stderr|
       if input = options.delete(:input)
-        stdin.write(input)
+        stdin.write(input.join)
       elsif block_given?
         yield stdin
       end
