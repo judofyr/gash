@@ -18,8 +18,7 @@ require 'open4'
 #
 # == How do you install it?
 # 
-# The stable version can be downloaded at {RubyForge}[http://rubyforge.org/frs/?group_id=4933&release_id=26630],
-# or installed through RubyGems:
+# The stable version can installed through RubyGems:
 #
 #   sudo gem install gash
 #
@@ -41,7 +40,7 @@ require 'open4'
 #
 # == Credits
 #
-# This code is based upon git-shelve[http://www.siebert-wd.de/projects/git-shelve],
+# This code is based upon git-shelve[https://github.com/siebertm/git-shelve],
 # created by <b>Michael Siebert</b>, which is released under LGPL. However,
 # Michael has allowed me to release this under the MIT-license as long as
 # I keep his name here.
