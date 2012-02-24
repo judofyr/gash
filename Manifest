@@ -1,5 +1,6 @@
 .ruby
 HISTORY
 README.rdoc
+LICENSE
 Manifest
 lib/gash.rb
