@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+name         "gash"
+version      "0.1.4"
+
+title        "Gash"
+summary      "Git + Hash"
+description  "Gash = Git + Hash"
+created      "2008-08-30"
+
+requirements ["open4 >=0.9.6",
+              "hanna-nouveau (document)"]
+
+resources    "home" => "http://dojo.rubyforge.org/gash",
+             "code" => "http://github.com/judofyr/gash"
+
+repositories "upstream" => "git@github.com:judofyr/gash.git"
+
+authors      ["Magnus Holm <judofyr@gmail.com>", 
+              "Michael Siebert"]
+
+organization "dojo"
+
+copyrights   ["2008 Magnus Holm (MIT)", 
+              "2008 Michael Siebert (MIT)"]
+
+alternatives ["grit"]
+
