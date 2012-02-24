@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>Gash::Tree</title>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='class' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>
+          <span class='type'>class</span>
+          Gash::Tree
+        </h1>
+        <ol class='paths'>
+          <li>
+            <a target="docwin" href="../../files/lib/gash_rb.html">lib/gash.rb</a>
+          </li>
+        </ol>
+        <div class='parent'>
+          Parent:
+          <strong><a target="docwin" href="../Gash.html">Gash</a></strong>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            
+            <p>A <a href="Tree.html">Tree</a> is a Hash which can store other instances of
+            <a href="Tree.html">Tree</a> and <a href="Blob.html">Blob</a>.</p>
+            
+            <h2 id="label-Special+methods">Special methods</h2>
+            
+            <p>Internally, a tree is being stored like this:</p>
+            
+            <pre class="ruby">{&#x000A;  <span class="ruby-string">&quot;README&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">blob</span>,&#x000A;  <span class="ruby-string">&quot;examples&quot;</span> =<span class="ruby-operator">&gt;</span> {&#x000A;    <span class="ruby-string">&quot;test.rb&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">blob</span>,&#x000A;    <span class="ruby-string">&quot;yay.rb&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">blob</span>&#x000A;  }&#x000A;}</pre>
+            
+            <p>So you have to do <code>tree["examples"].delete(&quot;test.rb&quot;)</code>
+            instead of <code>tree.delete(&quot;examples/test.rb&quot;)</code>. However,
+            there are some methods which supports the slash. All of these will work:</p>
+            
+            <pre>tree[&quot;examples/test.rb&quot;]&#x000A;tree.fetch(&quot;examples/test.rb&quot;)&#x000A;tree[&quot;examples/another.rb&quot;] = &quot;Content&quot;&#x000A;tree.store(&quot;examples/another.rb&quot;, &quot;Content&quot;) # Exactly the same as above.&#x000A;tree[&quot;examples&quot;][&quot;test.rb&quot;] # Or, you could use this</pre>
+            
+            <h2 id="label-Documentation">Documentation</h2>
+            
+            <p>The point of <a href="Tree.html">Tree</a> is that it should be as close to
+            Hash as possible. Therefore, methods which behaves exactly equally in <a
+            href="../Gash.html">Gash</a> and Hash will not be documentated below.
+            Please see the Ruby documentation if you wonder what you can do.</p>
+            
+            <p><strong>See also</strong>: <a href="Helpers.html">Helpers</a>, <a
+            href="Blob.html">Blob</a></p>
+          </div>
+          <div id='method-list'>
+            <h2>Methods</h2>
+            <h3>Public Instance</h3>
+            <ol>
+              <li><a target="docwin" href="#method-i-5B-5D">[]</a></li>
+              <li><a target="docwin" href="#method-i-5B-5D-3D">[]=</a></li>
+              <li><a target="docwin" href="#method-i-to_hash">to_hash</a></li>
+            </ol>
+          </div>
+          <div id='context'>
+            <div id='includes'>
+              <h2>Included modules</h2>
+              <ol>
+                <li><a target="docwin" href="Helpers.html">Helpers</a></li>
+              </ol>
+            </div>
+          </div>
+          <div id='section'>
+            <div id='aliases-list'>
+              <h2>Public Instance Aliases</h2>
+              <div class='name-list'>
+                <table summary='Public Instance Aliases'>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>/</td>
+                    <td>-&gt;</td>
+                    <td class='context-item-value'><a target="docwin" href="#method-i-5B-5D">[]</a></td>
+                  </tr>
+                  <tr class='top-aligned-row context-row'>
+                    <td class='context-item-name'>store</td>
+                    <td>-&gt;</td>
+                    <td class='context-item-value'><a target="docwin" href="#method-i-5B-5D-3D">[]=</a></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div id='methods'>
+              <h2>Public Instance methods</h2>
+              <div class='method public-instance' id='method-method-i-5B-5D'>
+                <a name='method-i-5B-5D'></a>
+                <div class='synopsis'>
+                  <span class='name'>[]</span>
+                  <span class='arguments'>(key, lazy = nil)</span>
+                </div>
+                <div class='description'>
+                  
+                  <p>Retrieves the <em>value</em> stored as <code>key</code>:</p>
+                  
+                  <pre>tree[&quot;FILE&quot;] == File.read(&quot;FILE&quot;)&#x000A;tree[&quot;DIR/FILE&quot;] == tree[&quot;DIR&quot;][&quot;FILE&quot;] == File.read(&quot;DIR/FILE&quot;)</pre>
+                  
+                  <h4 id="method-i-5B-5D-label-Lazy+loading">Lazy loading</h4>
+                  
+                  <p>By default, this method will automatically load the blob/tree from the
+                  repo. If you rather want to load it later, simply set <code>lazy</code> to
+                  <code>true</code>:</p>
+                  
+                  <pre>blob = tree[&quot;FILE&quot;, true]&#x000A;# do some other stuff...&#x000A;blob.load! # Load it now!</pre>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('method-i-5B-5D-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='method-i-5B-5D-source'><span class="ruby-comment"># File lib/gash.rb, line 172</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-operator">[]</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">lazy</span> = <span class="ruby-keyword">nil</span>)&#x000A;  <span class="ruby-identifier">ret</span> = <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">default</span>)&#x000A;<span class="ruby-keyword">ensure</span>&#x000A;  <span class="ruby-identifier">ret</span>.<span class="ruby-identifier">load!</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">ret</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:load!</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">lazy</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-method-i-5B-5D-3D'>
+                <a name='method-i-5B-5D-3D'></a>
+                <div class='synopsis'>
+                  <span class='name'>[]=</span>
+                  <span class='arguments'>(key, value, not_changed = nil)</span>
+                </div>
+                <div class='description'>
+                  
+                  <p>Stores the given <em>value</em> at <code>key</code>:</p>
+                  
+                  <pre>tree[&quot;FILE&quot;] = &quot;Content&quot;</pre>
+                  
+                  <p>It uses <a
+                  href="Helpers.html#method-i-normalize">Gash::Helpers#normalize</a> in order
+                  convert it to a blob/tree, and will always set the parent to itself:</p>
+                  
+                  <pre class="ruby"><span class="ruby-identifier">tree</span>[<span class="ruby-string">&quot;FILE&quot;</span>] = <span class="ruby-string">&quot;Content&quot;</span>&#x000A;  <span class="ruby-comment"># is the same as:</span>&#x000A;<span class="ruby-identifier">tree</span>[<span class="ruby-string">&quot;FILE&quot;</span>] = <span class="ruby-constant">Gash</span><span class="ruby-operator">::</span><span class="ruby-constant">Blob</span>.<span class="ruby-identifier">new</span>(:<span class="ruby-identifier">content</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;Content&quot;</span>, :<span class="ruby-identifier">parent</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">tree</span>)</pre>
+                  
+                  <h4 id="method-i-5B-5D-3D-label-Mark+as+changed">Mark as changed</h4>
+                  
+                  <p>By default, the object will be marked as changed (using
+                  <code>Helpers#changed!</code>). If this is not what you want, simply set
+                  <code>not_changed</code> to <code>true</code>.</p>
+                  
+                  <p>However, if you give it three arguments, then the second one will act as
+                  <code>not_changed</code>, not the third:</p>
+                  
+                  <pre class="ruby">       <span class="ruby-value">1</span>       <span class="ruby-value">2</span>        <span class="ruby-value">3</span>&#x000A;<span class="ruby-identifier">tree</span>[<span class="ruby-string">&quot;FILE&quot;</span>, <span class="ruby-keyword">true</span>] = <span class="ruby-string">&quot;Test&quot;</span>&#x000A;<span class="ruby-identifier">tree</span>[<span class="ruby-string">&quot;FILE&quot;</span>].<span class="ruby-identifier">changed?</span> <span class="ruby-comment"># =&gt; false</span></pre>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('method-i-5B-5D-3D-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='method-i-5B-5D-3D-source'><span class="ruby-comment"># File lib/gash.rb, line 202</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-operator">[]=</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">not_changed</span> = <span class="ruby-keyword">nil</span>)&#x000A;  <span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">not_changed</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">not_changed</span>.<span class="ruby-identifier">nil?</span>&#x000A;    [<span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>]&#x000A;  <span class="ruby-keyword">else</span>&#x000A;    [<span class="ruby-identifier">key</span>, <span class="ruby-identifier">not_changed</span>, <span class="ruby-identifier">value</span>]&#x000A;  <span class="ruby-keyword">end</span>&#x000A;  &#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">key</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;/&quot;</span>)&#x000A;    <span class="ruby-identifier">keys</span> = <span class="ruby-identifier">key</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&quot;/&quot;</span>)&#x000A;    <span class="ruby-identifier">name</span> = <span class="ruby-identifier">keys</span>.<span class="ruby-identifier">pop</span>&#x000A;    <span class="ruby-identifier">keys</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-keyword">self</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">memo</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-identifier">memo</span>[<span class="ruby-identifier">i</span>, <span class="ruby-identifier">not_changed</span>] = <span class="ruby-constant">Tree</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:parent</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">self</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">memo</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">i</span>)&#x000A;      <span class="ruby-identifier">memo</span>[<span class="ruby-identifier">i</span>, <span class="ruby-keyword">true</span>]&#x000A;    <span class="ruby-keyword">end</span>[<span class="ruby-identifier">name</span>, <span class="ruby-identifier">not_changed</span>] = <span class="ruby-identifier">value</span>&#x000A;  <span class="ruby-keyword">else</span>&#x000A;    <span class="ruby-identifier">value</span> = <span class="ruby-identifier">normalize</span>(<span class="ruby-identifier">value</span>)&#x000A;    <span class="ruby-identifier">value</span>.<span class="ruby-identifier">parent</span> = <span class="ruby-keyword">self</span>&#x000A;    <span class="ruby-keyword">super</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>)&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">ensure</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">changed!</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">not_changed</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-method-i-to_hash'>
+                <a name='method-i-to_hash'></a>
+                <div class='synopsis'>
+                  <span class='name'>to_hash</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  
+                  <p>Converts the tree to a Hash.</p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('method-i-to_hash-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='method-i-to_hash-source'><span class="ruby-comment"># File lib/gash.rb, line 227</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">to_hash</span>&#x000A;  <span class="ruby-identifier">inject</span>({}) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">memo</span>, (<span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>)<span class="ruby-operator">|</span>&#x000A;    <span class="ruby-identifier">memo</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:to_hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_hash</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>&#x000A;    <span class="ruby-identifier">memo</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a target="docwin" href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>
