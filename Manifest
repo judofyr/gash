@@ -1,5 +1,5 @@
 .ruby
 HISTORY
-README
+README.rdoc
 Manifest
 lib/gash.rb

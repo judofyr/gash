@@ -1,0 +1,23 @@
+= Gash, Git + Hash
+
+== Description
+
+Gash is a simple Ruby API for interfacing with a Git repo. While not as
+feature rich as say {grit}[https://github.com/mojombo/grit], it is easier 
+to use b/c it effectively allows you to work with the files in the repo much
+like you would any Ruby Hash.
+
+== Documentation
+
+Please see http://judofyr.github.com/gash or the documentation in lib/gash.rb!
+
+== Copyrights
+
+(MIT License)
+
+Copyright 2008 Magnus Holm
+
+Copyright 2008 Michael Siebert
+
+See LICENSE file for license details.
+
