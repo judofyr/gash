@@ -543,7 +543,8 @@ class Gash < SimpleDelegator
     reserr = ""
     status = Open4.popen4(*git_cmd) do |pid, stdin, stdout, stderr|
       if input = options.delete(:input)
-        stdin.write(input.join)
+        raw = input.is_a?(Array) ? input.join : input
+        stdin.write(raw)
       elsif block_given?
         yield stdin
       end
