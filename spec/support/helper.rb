@@ -1,7 +1,7 @@
 require "digest/sha1"
 module Helper
   def path
-    @@path ||= "/tmp/#{Digest::SHA1.hexdigest(Time.now.to_s)}.git"
+    @@path ||= "/tmp/#{Digest::SHA1.hexdigest(Time.now.to_s)}"
   end
 
   def setup
