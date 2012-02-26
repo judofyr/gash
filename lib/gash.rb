@@ -380,7 +380,7 @@ class Gash < SimpleDelegator
         Blob.new(:sha1 => sha1, :mode => mode)
       when ?t
         Tree.new(:sha1 => sha1, :mode => mode)
-      end
+      end if parent
     end
     self
   end
