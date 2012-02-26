@@ -1,5 +1,7 @@
 describe Gash do
-  it "should not crash" do
-    true.should be_true
+  let(:gash) { Gash.new(path) }
+
+  it "starts with an empty directory" do
+    gash.should be_empty
   end
 end
