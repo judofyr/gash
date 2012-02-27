@@ -19,4 +19,11 @@ module Helper
   def list_files(hash)
     `cd #{path} && git show --pretty='format:' --name-only #{hash}`.strip.split("\n")
   end
+
+  #
+  # @return String Diff content for last commit
+  #
+  def content
+    `cd #{path} && git show HEAD`
+  end
 end

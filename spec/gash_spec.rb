@@ -15,4 +15,13 @@ describe Gash do
     hash = gash.commit("My commit message")
     list_files(hash).should include("File")
   end
+
+  it "can override files" do
+    gash["File"] = "data"
+    hash = gash.commit("My commit message")
+    list_files(hash).should include("File")
+    gash["File"] = "other"
+    hash = gash.commit("My commit message 2")
+    content_for("File").should match(/other/)
+  end
 end
