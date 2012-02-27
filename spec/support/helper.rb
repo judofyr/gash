@@ -26,4 +26,16 @@ module Helper
   def content
     `cd #{path} && git show HEAD`
   end
+
+  #
+  # @dir String Folder to retrive
+  # @return String 
+  #   Example: 040000 tree d91d06157bdc633d25f970b9cc54d0eb74fb850f my-folder
+  #
+  def folder(dir)
+    tree = `cd #{path} && git cat-file -p HEAD`.split(" ")[1]
+    `cd #{path} && git cat-file -p #{tree}`.split("\n").select do |row| 
+      row.match(/#{dir}/) and row.match(/tree/)
+    end.first
+  end
 end

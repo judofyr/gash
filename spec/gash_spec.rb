@@ -22,6 +22,14 @@ describe Gash do
     list_files(hash).should include("File")
     gash["File"] = "other"
     hash = gash.commit("My commit message 2")
-    content_for("File").should match(/other/)
+    content.should match(/other/)
+  end
+
+  it "can create a tree" do
+    gash["my-folder/file"] = "content"
+    hash = gash.commit("My commit message")
+    content.should match(/content/)
+    folder("my-folder").should_not be_nil
+    folder("non-existing").should be_nil
   end
 end
