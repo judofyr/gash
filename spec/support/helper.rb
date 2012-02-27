@@ -1,11 +1,11 @@
-require "digest/sha1"
+require "tmpdir"
 module Helper
   def path
-    @@path ||= "/tmp/#{Digest::SHA1.hexdigest(Time.now.to_s)}"
+    @path ||= Dir.mktmpdir
   end
 
   def setup
-    `mkdir #{path} && cd #{path} && git init`
+    `cd #{path} && git init`
   end
 
   def teardown
