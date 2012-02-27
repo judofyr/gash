@@ -38,4 +38,11 @@ module Helper
       row.match(/#{dir}/) and row.match(/tree/)
     end.first
   end
+
+  #
+  # @return String The last commit message
+  #
+  def last_commit_message
+    `cd #{path} && git log --pretty='format:%s' -n 1`
+  end
 end
