@@ -81,7 +81,7 @@ class Gash < SimpleDelegator
     # Checks if this object has been changed (since last commit).
     def changed?; !@sha1 end
     # Mark this, and all parents as changed.
-    def changed!; @sha1 = nil;parent.changed! if parent end
+    def changed!; @sha1 = nil;parent.changed! if parent and not parent = self end
     # Returns the Gash-object (top-parent).
     def gash; parent.gash if parent end
     
@@ -380,7 +380,7 @@ class Gash < SimpleDelegator
         Blob.new(:sha1 => sha1, :mode => mode)
       when ?t
         Tree.new(:sha1 => sha1, :mode => mode)
-      end
+      end if parent
     end
     self
   end
@@ -543,7 +543,8 @@ class Gash < SimpleDelegator
     reserr = ""
     status = Open4.popen4(*git_cmd) do |pid, stdin, stdout, stderr|
       if input = options.delete(:input)
-        stdin.write(input.join)
+        raw = input.is_a?(Array) ? input.join : input
+        stdin.write(raw)
       elsif block_given?
         yield stdin
       end
