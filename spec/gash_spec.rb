@@ -29,7 +29,14 @@ describe Gash do
     gash["my-folder/file"] = "content"
     hash = gash.commit("My commit message")
     content.should match(/content/)
-    folder("my-folder").should_not be_nil
-    folder("non-existing").should be_nil
+    raw_commit.should match(%r{A\s+my-folder/file})
+  end
+
+  it "should be possible to pass a blob to path" do
+    gash["file1"] = "content"
+    gash["file2/a"] = gash["file1"]
+    gash.commit("Commit message")
+    raw_commit.should match(%r{A\s+file1})
+    raw_commit.should match(%r{A\s+file2/a})
   end
 end
