@@ -342,6 +342,10 @@ class Gash < SimpleDelegator
       @content ||= @sha1 ? load! : ''
     end
     alias_method :to_s, :__getobj__
+
+    def __setobj__(value) #:nodoc:
+      Blob.new(:content => value.to_s)
+    end
   end
   
   attr_accessor :branch, :repository

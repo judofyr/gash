@@ -45,4 +45,21 @@ module Helper
   def last_commit_message
     `cd #{path} && git log --pretty='format:%s' -n 1`
   end
+
+  #
+  # @return String
+  # @example
+  #   commit 5b580afc95c32721d35a7d659abce1e3845635a9
+  #   Author:     Linus Oleander <linus@oleander.nu>
+  #   AuthorDate: Mon Feb 27 23:16:59 2012 +0100
+  #   Commit:     Linus Oleander <linus@oleander.nu>
+  #   CommitDate: Mon Feb 27 23:16:59 2012 +0100
+  #
+  #       Add last_commit_message helper
+  #
+  #   M       spec/support/helper.rb
+  #
+  def raw_commit
+    `cd #{path} && git show --name-status --format=fuller`
+  end
 end
