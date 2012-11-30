@@ -19,7 +19,7 @@ RDoc::Task.new do |rdoc|
   rdoc.main = 'README.rdoc'
   rdoc.rdoc_dir = 'web'
   rdoc.title = "Gash #{version} Documentation"
-  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('README.rdoc')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
