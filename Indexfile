@@ -9,7 +9,8 @@ description  "Gash = Git + Hash"
 created      "2008-08-30"
 
 requirements ["open4 >=0.9.6",
-              "hanna-nouveau (document)"]
+              "hanna-nouveau (document)",
+              "lemon (test)"]
 
 resources    "home" => "http://dojo.rubyforge.org/gash",
              "code" => "http://github.com/judofyr/gash"

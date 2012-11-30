@@ -168,12 +168,15 @@ class Gash < SimpleDelegator
     #   blob = tree["FILE", true]
     #   # do some other stuff...
     #   blob.load! # Load it now!
-    def [](key, lazy = nil)
+    #
+    def retrieve(key, lazy = nil)
       ret = fetch(key, default)
     ensure
       ret.load! if ret.respond_to?(:load!) && !lazy
     end
-    alias / []
+
+    alias [] retrieve
+    alias /  retrieve
     
     # Stores the given _value_ at +key+:
     #
@@ -198,13 +201,14 @@ class Gash < SimpleDelegator
     #          1       2        3
     #   tree["FILE", true] = "Test"
     #   tree["FILE"].changed? # => false
-    def []=(key, value, not_changed = nil)
+    #
+    def store(key, value, not_changed = nil)
       key, value, not_changed = if not_changed.nil?
         [key, value]
       else
         [key, not_changed, value]
       end
-      
+
       if key.include?("/")
         keys = key.split("/")
         name = keys.pop
@@ -220,7 +224,8 @@ class Gash < SimpleDelegator
     ensure
       self.changed! unless not_changed
     end
-    alias store []=
+
+    alias []= store
      
     # Converts the tree to a Hash.
     def to_hash
@@ -275,13 +280,14 @@ class Gash < SimpleDelegator
       tree = self.dup
       tree.merge!(hash)
     end
-    
+
     def merge!(hash)
       hash.each do |key, value|
         self[key] = value
       end
       self
     end
+
     alias update merge!
     
     def replace(hash)
@@ -346,8 +352,13 @@ class Gash < SimpleDelegator
     def __setobj__(value) #:nodoc:
       Blob.new(:content => value.to_s)
     end
+
   end
   
+  #
+  #
+  #
+
   attr_accessor :branch, :repository
   
   # Opens the +repo+ with the specified +branch+.
